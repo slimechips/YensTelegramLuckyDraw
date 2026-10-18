@@ -15,6 +15,8 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
                       ?? builder.Configuration["ConnectionStrings:DefaultConnection"]
                       ?? "Server=localhost;Database=YensLuckyDraw;Trusted_Connection=True;TrustServerCertificate=True;";
 
+Console.WriteLine(connectionString);
+
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(connectionString));
 
