@@ -16,3 +16,4 @@ COPY --from=build /app/publish .
 # the controller can find them at /wwwroot/images/prizes/prize{Id}.jpg
 COPY --from=build /src/img /app/wwwroot/images/prizes
 ENTRYPOINT ["dotnet", "YensTelegramLuckyDraw.dll"]
+
