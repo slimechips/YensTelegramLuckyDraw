@@ -1,7 +1,9 @@
 # Dockerfile for YensTelegramLuckyDraw
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS base
 WORKDIR /app
-EXPOSE 80
+# Ensure ASP.NET listens on the HTTP ports Azure expects. Bind to port 80 (and 8080 as fallback).
+ENV ASPNETCORE_URLS="http://+:80;http://+:8080"
+EXPOSE 80 8080
 
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 WORKDIR /src
