@@ -2,8 +2,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Telegram.Bot;
 using Telegram.Bot.Types;
-using Telegram.Bot.Types.Enums;
-using Telegram.Bot.Types.InputFiles;
 using Microsoft.AspNetCore.Hosting;
 using System.IO;
 using YensTelegramLuckyDraw.Data;
@@ -18,6 +16,8 @@ public class TelegramController : ControllerBase
     private readonly AppDbContext _db;
     private readonly ITelegramBotClient _botClient;
     private readonly IWebHostEnvironment _env;
+    private readonly ILogger<TelegramController> _logger;
+
 
     public TelegramController(AppDbContext db, ITelegramBotClient botClient, IWebHostEnvironment env)
     {
@@ -47,7 +47,7 @@ public class TelegramController : ControllerBase
 
             if (!isAdmin)
             {
-                await _botClient.SendTextMessageAsync(chat.Id, "Only admin (Jason) can add spins.");
+                await _botClient.SendMessage(chat.Id, "Only admin (Jason) can add spins.");
                 return Ok();
             }
 
@@ -58,14 +58,14 @@ public class TelegramController : ControllerBase
             var state = await _db.DrawStates.FirstOrDefaultAsync();
             if (state == null)
             {
-                await _botClient.SendTextMessageAsync(chat.Id, "Draw state not initialized.");
+                await _botClient.SendMessage(chat.Id, "Draw state not initialized.");
                 return Ok();
             }
 
             state.SpinsAvailable += count;
             await _db.SaveChangesAsync();
 
-            await _botClient.SendTextMessageAsync(chat.Id, $"Added {count} spin(s) to Yen. Yen now has {state.SpinsAvailable} spins.");
+            await _botClient.SendMessage(chat.Id, $"Added {count} spin(s) to Yen. Yen now has {state.SpinsAvailable} spins.");
             return Ok();
         }
 
@@ -74,13 +74,13 @@ public class TelegramController : ControllerBase
             var state = await _db.DrawStates.FirstOrDefaultAsync();
             if (state == null)
             {
-                await _botClient.SendTextMessageAsync(chat.Id, "Draw state not initialized.");
+                await _botClient.SendMessage(chat.Id, "Draw state not initialized.");
                 return Ok();
             }
 
             if (state.SpinsAvailable <= 0)
             {
-                await _botClient.SendTextMessageAsync(chat.Id, "No spins available. Ask Jason to add spins using /add_spin.");
+                await _botClient.SendMessage(chat.Id, "No spins available. Ask Jason to add spins using /add_spin.");
                 return Ok();
             }
 
@@ -108,12 +108,12 @@ public class TelegramController : ControllerBase
             if (System.IO.File.Exists(fullPath))
             {
                 await using var fs = System.IO.File.OpenRead(fullPath);
-                var input = new InputOnlineFile(fs, filename);
-                await _botClient.SendPhotoAsync(chat.Id, input, caption: $"{prize.Name} (Spins left: {state.SpinsAvailable})");
+                var input = InputFile.FromStream(fs, filename);
+                await _botClient.SendPhoto(chat.Id, input, caption: $"{prize.Name} (Spins left: {state.SpinsAvailable})");
             }
             else
             {
-                await _botClient.SendTextMessageAsync(chat.Id, $"Spin result: {prize.Name}. Spins left: {state.SpinsAvailable}");
+                await _botClient.SendMessage(chat.Id, $"Spin result: {prize.Name}. Spins left: {state.SpinsAvailable}");
             }
             return Ok();
         }
@@ -123,7 +123,7 @@ public class TelegramController : ControllerBase
             var state = await _db.DrawStates.FirstOrDefaultAsync();
             if (state == null)
             {
-                await _botClient.SendTextMessageAsync(chat.Id, "Draw state not initialized.");
+                await _botClient.SendMessage(chat.Id, "Draw state not initialized.");
                 return Ok();
             }
 
@@ -134,20 +134,20 @@ public class TelegramController : ControllerBase
 
             if (!results.Any())
             {
-                await _botClient.SendTextMessageAsync(chat.Id, "No spin results yet.");
+                await _botClient.SendMessage(chat.Id, "No spin results yet.");
                 return Ok();
             }
 
             var lines = results.Take(20).Select(r => $"{r.Timestamp:u}: {r.Reward}");
             var responseText = string.Join("\n", lines);
-            await _botClient.SendTextMessageAsync(chat.Id, responseText);
+            await _botClient.SendMessage(chat.Id, responseText);
             return Ok();
         }
 
         if (text.StartsWith("/", StringComparison.OrdinalIgnoreCase))
         {
             var help = "Commands:\n/spin - use one spin\n/add_spin [n] - (admin Jason only) add n spins to Yen\n/see_results - show recent results";
-            await _botClient.SendTextMessageAsync(chat.Id, help);
+            await _botClient.SendMessage(chat.Id, help);
             return Ok();
         }
 
