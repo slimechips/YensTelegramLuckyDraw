@@ -16,12 +16,15 @@ public class TelegramController : ControllerBase
     private readonly AppDbContext _db;
     private readonly ITelegramBotClient _botClient;
     private readonly IWebHostEnvironment _env;
+  private readonly ILogger<TelegramController> _logger;
 
-    public TelegramController(AppDbContext db, ITelegramBotClient botClient, IWebHostEnvironment env)
+    public TelegramController(AppDbContext db, ITelegramBotClient botClient, IWebHostEnvironment env, 
+        ILogger<TelegramController> logger)
     {
         _db = db;
         _botClient = botClient;
         _env = env;
+        _logger = logger;
     }
 
     [HttpPost("update")]
@@ -118,6 +121,7 @@ public class TelegramController : ControllerBase
 
         if (text.StartsWith("/see_results", StringComparison.OrdinalIgnoreCase))
         {
+            _logger.LogInformation("See results command received.");
             var state = await _db.DrawStates.FirstOrDefaultAsync();
             if (state == null)
             {
