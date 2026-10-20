@@ -110,7 +110,7 @@ public class TelegramController : ControllerBase
             {
                 await using var fs = System.IO.File.OpenRead(fullPath);
                 var input = InputFile.FromStream(fs, filename);
-                await _botClient.SendPhoto(chat.Id, input, caption: $"{prize.Name} (Spins left: {state.SpinsAvailable})");
+                await _botClient.SendPhoto(chat.Id, input, caption: $"Congratulations! You won {prize.Name} (Spins left: {state.SpinsAvailable})");
             }
             else
             {
