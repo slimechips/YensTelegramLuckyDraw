@@ -36,6 +36,8 @@ else
 
 var app = builder.Build();
 
+app.UseHttpLogging();
+
 // Ensure database exists and seed
 using (var scope = app.Services.CreateScope())
 {
