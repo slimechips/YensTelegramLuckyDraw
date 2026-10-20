@@ -1,7 +1,8 @@
+using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.EntityFrameworkCore;
+using Telegram.Bot;
 using YensTelegramLuckyDraw.Data;
 using YensTelegramLuckyDraw.Models;
-using Telegram.Bot;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,7 +20,17 @@ Console.WriteLine(connectionString);
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(connectionString));
-builder.Services.AddHttpLogging(_ => { });
+builder.Services.AddHttpLogging(options =>
+{
+  options.LoggingFields =
+    HttpLoggingFields.RequestMethod |
+    HttpLoggingFields.RequestPath |
+    HttpLoggingFields.RequestQuery |
+    HttpLoggingFields.RequestHeaders |
+    HttpLoggingFields.ResponseStatusCode |
+    HttpLoggingFields.Duration |
+    HttpLoggingFields.RequestBody;
+});
 
 // Register Telegram Bot client using token from config or environment
 var botToken = builder.Configuration["TELEGRAM_BOT_TOKEN"]
