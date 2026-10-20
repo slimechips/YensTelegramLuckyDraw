@@ -19,6 +19,7 @@ Console.WriteLine(connectionString);
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(connectionString));
+builder.Services.AddHttpLogging();
 
 // Register Telegram Bot client using token from config or environment
 var botToken = builder.Configuration["TELEGRAM_BOT_TOKEN"]
@@ -38,14 +39,14 @@ var app = builder.Build();
 // Ensure database exists and seed
 using (var scope = app.Services.CreateScope())
 {
-    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    db.Database.EnsureCreated();
-    // Seed single draw state for Yen if missing
-    if (!db.DrawStates.Any())
-    {
-        db.DrawStates.Add(new YensTelegramLuckyDraw.Models.DrawState { SpinsAvailable = 0 });
-        db.SaveChanges();
-    }
+  var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+  db.Database.EnsureCreated();
+  // Seed single draw state for Yen if missing
+  if (!db.DrawStates.Any())
+  {
+    db.DrawStates.Add(new YensTelegramLuckyDraw.Models.DrawState { SpinsAvailable = 0 });
+    db.SaveChanges();
+  }
 }
 
 // Configure the HTTP request pipeline.
