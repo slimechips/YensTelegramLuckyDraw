@@ -191,8 +191,8 @@ public class TelegramController : ControllerBase
         string category;
         if (r < 3.0) category = "VeryHard"; // 3%
         else if (r < 3.0 + 7.0) category = "Hard"; // 7%
-        else if (r < 3.0 + 7.0 + 12.0) category = "Medium"; // 12%
-        else if (r < 3.0 + 7.0 + 12.0 + 18.0) category = "Easy"; // 18%
+        else if (r < 3.0 + 7.0 + 36.0) category = "Medium"; // 36%
+        else if (r < 3.0 + 7.0 + 36.0 + 54.0) category = "Easy"; // 18%
         else category = "NoPrize";
 
         if (category == "NoPrize") return new Prize(0, "No prize", "None");
