@@ -101,9 +101,9 @@ public class TelegramController : ControllerBase
             _db.SpinResults.Add(spin);
             await _db.SaveChangesAsync();
 
-            // Try to send an image for the prize if available in wwwroot/images/prizes/prize{Id}.jpg
+            // Try to send an image for the prize if available in wwwroot/images/prizes/prize{Id}.png
             var imagesDir = Path.Combine(_env.WebRootPath ?? Path.Combine(Directory.GetCurrentDirectory(), "wwwroot"), "images", "prizes");
-            var filename = $"prize{prize.Id}.jpg";
+            var filename = $"prize{prize.Id}.png";
             var fullPath = Path.Combine(imagesDir, filename);
 
             if (System.IO.File.Exists(fullPath))
