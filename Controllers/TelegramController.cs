@@ -16,8 +16,6 @@ public class TelegramController : ControllerBase
     private readonly AppDbContext _db;
     private readonly ITelegramBotClient _botClient;
     private readonly IWebHostEnvironment _env;
-    private readonly ILogger<TelegramController> _logger;
-
 
     public TelegramController(AppDbContext db, ITelegramBotClient botClient, IWebHostEnvironment env)
     {
