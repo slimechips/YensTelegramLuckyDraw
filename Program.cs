@@ -19,7 +19,7 @@ Console.WriteLine(connectionString);
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(connectionString));
-builder.Services.AddHttpLogging();
+builder.Services.AddHttpLogging(_ => { });
 
 // Register Telegram Bot client using token from config or environment
 var botToken = builder.Configuration["TELEGRAM_BOT_TOKEN"]
