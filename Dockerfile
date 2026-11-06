@@ -14,6 +14,7 @@ RUN dotnet publish "YensTelegramLuckyDraw.csproj" -c Release -o /app/publish /p:
 FROM base AS final
 WORKDIR /app
 COPY --from=build /app/publish .
+COPY --from=build /src/Puzzles /app/Puzzles
 # Copy prize images from the source image folder into the published app's wwwroot so
 # the controller can find them at /wwwroot/images/prizes/prize{Id}.jpg
 COPY --from=build /src/img /app/wwwroot/images/prizes

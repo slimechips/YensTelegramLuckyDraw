@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Hosting;
 using System.IO;
 using YensTelegramLuckyDraw.Data;
 using YensTelegramLuckyDraw.Models;
+using YensTelegramLuckyDraw.Services;
 
 namespace YensTelegramLuckyDraw.Controllers;
 
@@ -18,11 +19,11 @@ public class TelegramController : ControllerBase
     private readonly IWebHostEnvironment _env;
   private readonly ILogger<TelegramController> _logger;
 
-    public TelegramController(AppDbContext db, ITelegramBotClient botClient, IWebHostEnvironment env, 
+    public TelegramController(AppDbContext db, IStandardTelegramBotClient botClient, IWebHostEnvironment env, 
         ILogger<TelegramController> logger)
     {
         _db = db;
-        _botClient = botClient;
+        _botClient = botClient.Client;
         _env = env;
         _logger = logger;
     }

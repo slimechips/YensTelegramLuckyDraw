@@ -11,7 +11,7 @@ namespace YensTelegramLuckyDraw.Controllers;
 [ApiController]
 [Route("api/lateral-thinking/telegram")]
 public sealed class LateralThinkingTelegramController(
-    ITelegramBotClient botClient,
+    ILateralThinkingTelegramBotClient botClient,
     LateralPuzzleService lateralPuzzleService,
     IOptions<LateralThinkingSettings> settings) : ControllerBase
 {
@@ -50,12 +50,12 @@ public sealed class LateralThinkingTelegramController(
             {
                 if (settings.Value.AdminUserId == 0)
                 {
-                    await botClient.SendMessage(chat.Id,
+                    await botClient.Client.SendMessage(chat.Id,
                         "Puzzle admin is not configured. Set LateralThinkingSettings:AdminUserId first.");
                 }
                 else if (user.Id != settings.Value.AdminUserId)
                 {
-                    await botClient.SendMessage(chat.Id, "Only the configured puzzle admin can clear puzzle data.");
+                    await botClient.Client.SendMessage(chat.Id, "Only the configured puzzle admin can clear puzzle data.");
                 }
                 else
                 {
@@ -65,7 +65,7 @@ public sealed class LateralThinkingTelegramController(
             }
             else
             {
-                await botClient.SendMessage(chat.Id,
+                await botClient.Client.SendMessage(chat.Id,
                     "Commands:\n/newpuzzle - start a random lateral-thinking puzzle\n/resetpuzzle - reset the current puzzle's conversation and attempt count\n/adminclearpuzzles - (admin only) clear all puzzle sessions and completed-puzzle history");
             }
 
@@ -84,7 +84,7 @@ public sealed class LateralThinkingTelegramController(
         try
         {
             var response = await getResponse(HttpContext.RequestAborted);
-            await botClient.SendMessage(chatId, response, cancellationToken: HttpContext.RequestAborted);
+            await botClient.Client.SendMessage(chatId, response, cancellationToken: HttpContext.RequestAborted);
         }
         finally
         {

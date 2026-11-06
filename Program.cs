@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.AI;
 using OpenAI;
-using Telegram.Bot;
 using YensTelegramLuckyDraw.Data;
 using YensTelegramLuckyDraw.Models;
 using YensTelegramLuckyDraw.Models.Settings;
@@ -57,18 +56,14 @@ builder.Services.Configure<LateralThinkingSettings>(
 builder.Services.AddSingleton<LateralPuzzleCatalog>();
 builder.Services.AddScoped<LateralPuzzleService>();
 
-// Register Telegram Bot client using token from config or environment
-var botToken = builder.Configuration["TELEGRAM_BOT_TOKEN"]
-               ?? Environment.GetEnvironmentVariable("TELEGRAM_BOT_TOKEN");
-if (string.IsNullOrWhiteSpace(botToken))
-{
-    // Register a placeholder client to avoid null DI errors; controller will error if token missing
-    builder.Services.AddSingleton<ITelegramBotClient>(new TelegramBotClient("") );
-}
-else
-{
-    builder.Services.AddSingleton<ITelegramBotClient>(new TelegramBotClient(botToken));
-}
+var standardBotToken = builder.Configuration["TELEGRAM_BOT_TOKEN"]
+                       ?? Environment.GetEnvironmentVariable("TELEGRAM_BOT_TOKEN");
+var lateralThinkingBotToken = builder.Configuration["LATERAL_THINKING_TELEGRAM_BOT_TOKEN"]
+                              ?? Environment.GetEnvironmentVariable("LATERAL_THINKING_TELEGRAM_BOT_TOKEN");
+builder.Services.AddSingleton<IStandardTelegramBotClient>(
+    new StandardTelegramBotClient(TelegramBotClientFactory.Create(standardBotToken)));
+builder.Services.AddSingleton<ILateralThinkingTelegramBotClient>(
+    new LateralThinkingTelegramBotClient(TelegramBotClientFactory.Create(lateralThinkingBotToken)));
 
 var app = builder.Build();
 
