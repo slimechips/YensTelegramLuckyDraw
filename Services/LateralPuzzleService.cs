@@ -159,7 +159,7 @@ public sealed class LateralPuzzleService(
         if (verdict == "SOLVED")
         {
             session.IsActive = false;
-            var participantIds = session.Participants.Select(participant => participant.TelegramUserId).Distinct().ToArray();
+            var participantIds = session.Participants.Select(participant => participant.TelegramUserId).Distinct().ToList();
             var existingRecords = await db.PlayedLateralPuzzles
                 .Where(record => record.PuzzleNumber == session.PuzzleNumber && participantIds.Contains(record.TelegramUserId))
                 .Select(record => record.TelegramUserId)
